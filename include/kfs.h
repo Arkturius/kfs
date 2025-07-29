@@ -15,6 +15,8 @@ typedef char			i8;
 # define	INLINE	static inline __attribute__((always_inline))
 # define	UNUSED	__attribute__((unused))
 
+# define	NULL	(void *)0
+
 // VGA.h
 
 # define	VGA_SCREEN	0xB8000
@@ -25,11 +27,16 @@ void	kwait(void);
 
 typedef struct _VGA_ctx
 {
-	u16	*screen;
 	u8	col;
 	u8	row;
 	u8	attr;
 }	VGA_ctx;
+
+typedef struct _VGA_screen
+{
+	VGA_ctx	ctx;
+	u16		*screen;
+}	VGA_screen;
 
 enum vga_color
 {
