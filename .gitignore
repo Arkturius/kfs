@@ -1,3 +1,5 @@
 .build
 *.iso
 *.bin
+.cache
+compile_commands.json

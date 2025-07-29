@@ -21,6 +21,16 @@ kstart:
 	hlt
 	jmp .hlt
 
+global kwait
+kwait:
+	mov		ecx, 0xFFFFFF
+.loop:
+	nop
+	dec		ecx
+	test	ecx, ecx
+	jne		.loop
+	ret
+
 section .bss
 STACK_TOP:	resb 4096
 STACK_BTM:
