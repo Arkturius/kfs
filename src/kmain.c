@@ -1,10 +1,13 @@
 #include <kfs.h>
 #include <string.h>
 
+
+void printk(const char *fmt, ...);
+void printk_fflush(void);
+
 INLINE u8
 inb(u16 port)
-{
-    u8 ret;
+{ u8 ret;
     __asm__ volatile (
 		"inb %w1, %b0" 
 		: "=a"(ret) 
@@ -86,19 +89,45 @@ vga_scroll(void)
 }
 
 INLINE void
+vga_newline(void)
+{
+	VGA->ctx.col = 0;
+	if (VGA->ctx.row + 1 == VGA_HEIGHT)
+		vga_scroll();
+	else
+		VGA->ctx.row++;
+}
+
+INLINE void
 vga_putc(char c)
 {
-	VGA1.screen[VGA->ctx.row * VGA_WIDTH + VGA->ctx.col] = VGA->ctx.attr << 8 | c;
-	VGA->ctx.col++;
-	if (VGA->ctx.col == VGA_WIDTH)
+	if(c == '\n')
+		vga_newline();
+	else
 	{
-		VGA->ctx.col = 0;
-		if (VGA->ctx.row + 1 == VGA_HEIGHT)
-			vga_scroll();
-		else
-			VGA->ctx.row++;
+		VGA1.screen[VGA->ctx.row * VGA_WIDTH + VGA->ctx.col] = VGA->ctx.attr << 8 | c;
+		VGA->ctx.col++;
+		if (VGA->ctx.col == VGA_WIDTH)
+			vga_newline();
 	}
 	vga_cursor_update();
+}
+
+void 
+vga_putstr(char *str)
+{
+	while(*str)
+		vga_putc(*(str++));
+}
+
+void 
+vga_write(char *str, u32 len)
+{
+	u32 i;
+
+	i = 0;
+	while(i < len)
+		vga_putc(str[i++]);
 }
 
 int kmain(void)
@@ -113,6 +142,10 @@ int kmain(void)
 	vga_cursor_set(39, 12);
 	vga_putc('4');
 	vga_putc('2');
+
+	printk("\n%d\n",42);
+	printk("coucou les musulmans moi je mange la glace, AAAAAAAAAAAAAAAAAAAAAAAA%x\n", 0x69);
+
 
 	return (0);
 }

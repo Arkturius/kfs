@@ -14,7 +14,8 @@ LDSCRIPT	:= ./kfs.ld
 LDFLAGS		:= -T $(LDSCRIPT)
 
 SRCS_S		:= src/boot.s
-SRCS_C		:= src/kmain.c
+SRCS_C		:=	src/kmain.c \
+				src/printk.c
 
 OBJS_DIR	:= .build
 
