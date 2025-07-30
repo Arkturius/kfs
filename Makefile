@@ -15,7 +15,8 @@ LDFLAGS		:= -T $(LDSCRIPT)
 
 SRCS_S		:= src/boot.s
 SRCS_C		:=	src/kmain.c \
-				src/printk.c
+				src/printk.c \
+				src/vga.c
 
 OBJS_DIR	:= .build
 

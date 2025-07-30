@@ -1,7 +1,8 @@
 #ifndef _STRING_H
 # define _STRING_H
 
-# include <kfs.h>
+# include <sys/io.h>
+# include <sys/cdefs.h>
 
 INLINE void
 *memset(void *s, int c, u32 n)

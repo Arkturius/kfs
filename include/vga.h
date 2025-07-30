@@ -1,29 +1,16 @@
-#ifndef _KFS_H
-# define _KFS_H
+#ifndef _VGA_H
+# define _VGA_H
 
-// types.h
-
-typedef unsigned int	u32;
-typedef unsigned short	u16;
-typedef unsigned char	u8;
-typedef int				i32;
-typedef short			i16;
-typedef char			i8;
-
-// cdefs.h
-
-# define	INLINE	static inline __attribute__((always_inline))
-# define	UNUSED	__attribute__((unused))
-
-# define	NULL	(void *)0
-
-// VGA.h
+# include <sys/io.h>
+# include <sys/cdefs.h>
+# include <sys/types.h>
 
 # define	VGA_SCREEN	0xB8000
 # define	VGA_WIDTH	80
 # define	VGA_HEIGHT	25
 
-void	kwait(void);
+# define	VGA_INDEX_BYTE	0x3D4
+# define	VGA_DATA_BYTE	(VGA_INDEX_BYTE + 1)
 
 typedef struct _VGA_ctx
 {
@@ -58,4 +45,27 @@ enum vga_color
 	VGA_COLOR_WHITE			= 15,
 };
 
-#endif // _KFS_H
+extern VGA_screen	VGA1;
+extern VGA_screen	VGA2;
+extern VGA_screen	VGA3;
+extern VGA_screen	*VGA;
+
+extern u16	VGA2_screen[VGA_WIDTH * VGA_HEIGHT];
+extern u16	VGA3_screen[VGA_WIDTH * VGA_HEIGHT];
+
+void
+vga_attr_set(u8 fg, u8 bg);
+
+void
+vga_cursor_set(u8 x, u8 y);
+
+void
+vga_putc(char c);
+
+void 
+vga_puts(char *str);
+
+void
+vga_write(char *str, u32 len);
+
+#endif // _VGA_H

@@ -1,9 +1,10 @@
-#include <kfs.h>
+/**
+ * printk.c
+ */
+
 #include <string.h>
 #include <stdarg.h>
-
-void vga_write(char *str, u32 len);
-void vga_putstr(char *str);
+#include <vga.h>
 
 static const char	*lltoa(long l)
 {
@@ -96,7 +97,7 @@ static const char	*ptrtoa(unsigned long l)
 
 typedef struct	printk_ctx
 {
-	u32	len;
+	u32			len;
 	char		out[1024];
 }	printf_ctx;
 
@@ -241,7 +242,7 @@ printk_switch_flags(const char **fmt_ptr, va_list ap)
 			to_add = ptrtoa(va_arg(ap, unsigned long));
 			break ;
 		default:
-			vga_putstr("Unsupported format.\n");
+			vga_puts("Unsupported format.\n");
 			//exit(1); //TODO: we need a exit
 			return ;
 	}
