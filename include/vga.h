@@ -54,6 +54,9 @@ extern u16	VGA2_screen[VGA_WIDTH * VGA_HEIGHT];
 extern u16	VGA3_screen[VGA_WIDTH * VGA_HEIGHT];
 
 void
+vga_init(void);
+
+void
 vga_attr_set(u8 fg, u8 bg);
 
 void

@@ -103,7 +103,7 @@ typedef struct	printk_ctx
 
 printf_ctx	printk_ctx = {0};
 
-static inline void
+void
 printk_fflush(void)
 {
 	vga_write(printk_ctx.out, printk_ctx.len);
@@ -247,7 +247,9 @@ printk_switch_flags(const char **fmt_ptr, va_list ap)
 			return ;
 	}
 	len = strlen(to_add);
-	int	diff = pad - len - (*to_add == '-' && *fmt != 's');
+	int	diff;
+
+	diff = pad - len - (*to_add == '-' && *fmt != 's');
 	
 	if (*fmt != 'p' && (flags & (U_ZERO | U_PADDED)))
 	{
@@ -261,12 +263,13 @@ printk_switch_flags(const char **fmt_ptr, va_list ap)
 	}
 
 end:
+	diff = pad - len - (*to_add == '-' && *fmt != 's');
 	printk_ctx_cat(to_add, len);
-//	if (flags & U_MINUS)
-//	{
-//		while (diff-- > 0)
-//			printk_ctx_cat(&c, 1);
-//	}
+	if (flags & U_MINUS)
+	{
+		while (diff-- > 0)
+			printk_ctx_cat(&c, 1);
+	}
 	*fmt_ptr = fmt;
 }
 

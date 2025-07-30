@@ -16,7 +16,8 @@ LDFLAGS		:= -T $(LDSCRIPT)
 SRCS_S		:= src/boot.s
 SRCS_C		:=	src/kmain.c \
 				src/printk.c \
-				src/vga.c
+				src/vga.c	\
+				src/string.c
 
 OBJS_DIR	:= .build
 
@@ -26,6 +27,10 @@ OBJS		:= $(OBJS_C) $(OBJS_S)
 
 BINARY		:= kfs.bin
 ISO			:= kfs.iso
+
+ifeq ($(BONUS), 1)
+	CFLAGS	+= -DKFS_BONUS
+endif
 
 all:	$(BINARY)
 

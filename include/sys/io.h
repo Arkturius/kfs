@@ -4,7 +4,7 @@
 # include <sys/cdefs.h>
 # include <sys/types.h>
 
-INLINE u8
+__inline u8
 inb(u16 port)
 {	
 	u8 ret;
@@ -19,7 +19,7 @@ inb(u16 port)
     return (ret);
 }
 
-INLINE void
+__inline void
 outb(u16 port, u8 val)
 {
     __asm

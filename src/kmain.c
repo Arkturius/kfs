@@ -2,21 +2,30 @@
  * kmain.c
  */
 
-#include <string.h>
+#include <printk.h>
 #include <vga.h>
 
-void printk(const char *fmt, ...);
-void printk_fflush(void);
+u8
+kb_key_get(void)
+{
+	return (0);
+}
 
 int kmain(void)
 {
-	memset(VGA->screen, 0, VGA_WIDTH * VGA_HEIGHT * 2);
+	vga_init();
 
-	vga_attr_set(VGA_COLOR_LIGHT_BLUE, VGA_COLOR_BLACK);
+	printk("%d\n", 42);
 
-	printk("%x\n", 0x45);
-	printk("salut %x\n", 0x45);
-	printk("salut %u\n", -25);
+	while (1)
+	{
+		u8	key = kb_key_get();
+
+		if (!key)
+			continue ;
+
+		vga_putc(key);
+	}
 
 	return (0);
 }
