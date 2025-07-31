@@ -45,7 +45,7 @@ vga_newline(void)
 		vga_scroll();
 	else
 		VGA_CTX.row++;
-	((u16 *)VGA_SCREEN)[VGA_CTX.row * VGA_WIDTH + VGA_CTX.col] = (VGA_CTX.attr << 8) | ' ';
+	((u16 *)VGA_SCREEN)[VGA_CTX.row * VGA_WIDTH + VGA_CTX.col] = (VGA_CURSOR_ATTR << 8) | ' ';
 	vga_cursor_update();
 }
 
@@ -86,7 +86,7 @@ vga_backspace(void)
 
 		if ((*current & 0xFF) != 0)
 		{
-			*current = VGA_CTX.attr << 8;
+			*current = VGA_CURSOR_ATTR << 8;
 			break ;
 		}
 	}
@@ -97,19 +97,23 @@ void
 vga_screen_clear(u16 *vga)
 {
 	for (u32 i = 0; i < VGA_WIDTH * VGA_HEIGHT; ++i)
-		vga[i] = (VGA_CTX.attr << 8) | ' ';
+		vga[i] = (VGA_CURSOR_ATTR << 8);
 }
 
 void
 vga_init(void)
 {
-	VGA_CTX.attr = VGA_INIT_ATTR;
-	VGA0.ctx.attr = VGA_INIT_ATTR;
-	VGA1.ctx.attr = VGA_INIT_ATTR;
+	VGA_CTX.attr = VGA_CURSOR_ATTR;
+	VGA0.ctx.attr = VGA_CURSOR_ATTR;
+	VGA1.ctx.attr = VGA_CURSOR_ATTR;
 	
 	vga_screen_clear((u16 *)VGA_SCREEN);
 	vga_screen_clear(VGA0.screen);
 	vga_screen_clear(VGA1.screen);
+
+	outb(VGA_INDEX_BYTE, 0x0A);
+    outb(VGA_DATA_BYTE, 0x00);
+    outb(VGA_INDEX_BYTE, 0x0B);
 }
 
 void
