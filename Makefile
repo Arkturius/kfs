@@ -2,31 +2,32 @@
 # Makefile
 #
 
-PREFIX		:= i686-elf
+include sources.mk
 
-CC			:= $(PREFIX)-gcc
-CFLAGS		:= -ffreestanding -fno-builtin -fno-exceptions -fno-stack-protector -nostdlib -nodefaultlibs -Wall -Wextra -Werror -O2 -Iinclude
+PREFIX		:=	i686-elf
 
-AS			:= nasm
-ASFLAGS		:= -f elf32
+CC			:=	$(PREFIX)-gcc
+CFLAGS		:=	-ffreestanding -fno-builtin -fno-exceptions -fno-stack-protector -nostdlib -nodefaultlibs -Wall -Wextra -Werror -O2 -Iinclude
 
-LDSCRIPT	:= ./kfs.ld
-LDFLAGS		:= -T $(LDSCRIPT)
+AS			:=	nasm
+ASFLAGS		:=	-f elf32
 
-SRCS_S		:= src/boot.s
-SRCS_C		:=	src/kmain.c \
-				src/printk.c \
-				src/vga.c	\
-				src/string.c
+LDSCRIPT	:=	./kfs.ld
+LDFLAGS		:=	-T $(LDSCRIPT)
 
-OBJS_DIR	:= .build
+SRCS_DIR	:=	src
 
-OBJS_S		:= $(addprefix $(OBJS_DIR)/, $(SRCS_S:%.s=%.o))
-OBJS_C		:= $(addprefix $(OBJS_DIR)/, $(SRCS_C:%.c=%.o))
-OBJS		:= $(OBJS_C) $(OBJS_S)
+SRCS_S		:=	$(addprefix $(SRCS_DIR)/, $(SRCS_S))
+SRCS_C		:=	$(addprefix $(SRCS_DIR)/, $(SRCS_C))
 
-BINARY		:= kfs.bin
-ISO			:= kfs.iso
+OBJS_DIR	:=	.build
+
+OBJS_S		:=	$(addprefix $(OBJS_DIR)/, $(SRCS_S:%.s=%.o))
+OBJS_C		:=	$(addprefix $(OBJS_DIR)/, $(SRCS_C:%.c=%.o))
+OBJS		:=	$(OBJS_C) $(OBJS_S)
+
+BINARY		:=	kfs.bin
+ISO			:=	kfs.iso
 
 ifeq ($(BONUS), 1)
 	CFLAGS	+= -DKFS_BONUS

@@ -66,9 +66,9 @@ void
 vga_putc(char c);
 
 void 
-vga_puts(char *str);
+vga_puts(const char *str);
 
 void
-vga_write(char *str, u32 len);
+vga_write(const char *str, u32 len);
 
 #endif // _VGA_H

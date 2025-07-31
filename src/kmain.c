@@ -2,6 +2,7 @@
  * kmain.c
  */
 
+#include <kernel.h>
 #include <printk.h>
 #include <vga.h>
 
@@ -23,6 +24,9 @@ int kmain(void)
 
 		if (!key)
 			continue ;
+
+// 		if (KB_KEY_ALT && key == KB_KEYCODE_TAB)
+// 			vga_screen_shift();
 
 		vga_putc(key);
 	}

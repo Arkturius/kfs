@@ -96,14 +96,14 @@ vga_putc(char c)
 }
 
 void 
-vga_puts(char *str)
+vga_puts(const char *str)
 {
 	while(*str)
 		vga_putc(*(str++));
 }
 
 void 
-vga_write(char *str, u32 len)
+vga_write(const char *str, u32 len)
 {
 	u32 i;
 

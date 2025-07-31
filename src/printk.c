@@ -2,103 +2,19 @@
  * printk.c
  */
 
+#include <kernel.h>
 #include <string.h>
 #include <stdarg.h>
 #include <vga.h>
 
-static const char	*lltoa(long l)
-{
-	static char	buff[22] = {0};
-	char		*cursor;
-
-	memset(buff, 0, sizeof(buff));
-	cursor = &buff[20];
-	if (!l)
-	{
-		*cursor = '0';
-		return (cursor);
-	}
-	while (l)
-	{
-		char	c = l % 10;
-		if (l < 0)
-			c = -c;
-		*cursor-- = c + 48;
-		if (l > -10 && l < 0)
-			*cursor-- = '-';
-		l /= 10;
-	}
-	cursor++;
-	return (cursor);
-}
-
-static const char	*ulltoa(unsigned long l)
-{
-	static char	buff[21] = {0};
-	char		*cursor;
-
-	memset(buff, 0, sizeof(buff));
-	cursor = &buff[19];
-	if (!l)
-	{
-		*cursor = '0';
-		return (cursor);
-	}
-	while (l)
-	{
-		char	c = l % 10;
-		*cursor-- = c + 48;
-		l /= 10;
-	}
-	cursor++;
-	return (cursor);
-}
-
-const char	*ulxtoa(unsigned long l, int upper)
-{
-	static char	buff[17] = {0};
-	static char	*hex = "0123456789abcdef0123456789ABCDEF";
-	char		*cursor;
-
-	memset(buff, 0, sizeof(buff));
-	cursor = &buff[15];
-	if (!l)
-	{
-		*cursor = '0';
-		return (cursor);
-	}
-	while (l)
-	{
-		char	c = l & 0xF;
-		if (upper)
-			c |= 0x10;
-		*cursor-- = hex[(int)c];
-		l >>= 4;
-	}
-	cursor++;
-	return (cursor);
-}
-
-static const char	*ptrtoa(unsigned long l)
-{
-	static char	buff[19] = {0};
-
-	if (l != 0)
-	{
-		strcat(buff, "0x");
-		strcat(buff + 2, ulxtoa(l, 0));
-	}
-	else
-		strcat(buff, "(nil)");
-	return (buff);
-}
-
 /* CONTEXT ********************************************************************/
+
+#define		PRINTK_BUFSIZE	1024
 
 typedef struct	printk_ctx
 {
 	u32			len;
-	char		out[1024];
+	char		out[PRINTK_BUFSIZE];
 }	printf_ctx;
 
 printf_ctx	printk_ctx = {0};
@@ -110,35 +26,24 @@ printk_fflush(void)
 	printk_ctx.len = 0;
 }
 
-static inline void
+__inline void
 printk_ctx_cat(const char *src, u32 len)
 {
-	if (printk_ctx.len + len >= 1024)
+	if (printk_ctx.len + len >= PRINTK_BUFSIZE)
 		printk_fflush();
 
 	while (len--)
 	{
 		printk_ctx.out[printk_ctx.len++] = *src++;
-		if (printk_ctx.len == 1023)
+		if (printk_ctx.len == PRINTK_BUFSIZE - 1)
 		{
-			printk_ctx.out[1023] = 0;
+			printk_ctx.out[PRINTK_BUFSIZE - 1] = 0;
 			printk_fflush();
 			printk_ctx.len = 0;
 		}
 	}
 	printk_ctx.out[printk_ctx.len] = 0;
 }
-
-/*
-__attribute__((destructor))
-static void	printk_ctx_destroy(void)
-{
-	if (printk_ctx.out)
-	{
-		printk_fflush();
-	}
-}
-*/
 
 /* PRINTER ********************************************************************/
 
@@ -151,11 +56,11 @@ enum	uprintf_flags
 	U_INVALID	= 1 << 31
 };
 
-static inline u32
+__inline u32
 printk_switch_len(const char **fmt_ptr)
 {
 	const char	*fmt = *fmt_ptr;
-	u32	z = 0;
+	u32			z = 0;
 
 	while (*fmt && *fmt >= '0' && *fmt <= '9')
 	{
@@ -166,7 +71,7 @@ printk_switch_len(const char **fmt_ptr)
 	return (z);
 }
 
-static inline u32
+__inline u32
 printk_switch_prefix(const char **fmt_ptr, u32 *pad_ptr)
 {
 	const char	*fmt = *fmt_ptr;
@@ -196,19 +101,20 @@ printk_switch_prefix(const char **fmt_ptr, u32 *pad_ptr)
 	return (flags);
 }
 
-static inline void
+__inline void
 printk_switch_flags(const char **fmt_ptr, va_list ap)
 {
 	const char	*fmt = *fmt_ptr;
 	const char	*to_add;
-	u32	flags = 0;
-	u32	pad = 0;
-	u32	len = 0;
+	u32			flags = 0;
+	u32			pad = 0;
+	u32			len = 0;
 	char		c;
 
 	flags = printk_switch_prefix(&fmt, &pad);
 	if (flags & U_INVALID)
-		return ; //TODO: we need a exit
+		panic("Invalid printk prefix.");
+	
 	switch (*fmt)
 	{
 		case 'c':
@@ -242,8 +148,7 @@ printk_switch_flags(const char **fmt_ptr, va_list ap)
 			to_add = ptrtoa(va_arg(ap, unsigned long));
 			break ;
 		default:
-			vga_puts("Unsupported format.\n");
-			//exit(1); //TODO: we need a exit
+			panic("Invalid printk format.");
 			return ;
 	}
 	len = strlen(to_add);
@@ -273,11 +178,11 @@ end:
 	*fmt_ptr = fmt;
 }
 
-void	vdprintk(const char *fmt, va_list ap)
+void
+vdprintk(const char *fmt, va_list ap)
 {
 	if (!fmt)
 		return ;
-
 	while (*fmt)
 	{
 		switch (*fmt)
@@ -297,7 +202,8 @@ void	vdprintk(const char *fmt, va_list ap)
 	}
 }
 
-void	printk(const char *fmt, ...)
+void
+printk(const char *fmt, ...)
 {
 	va_list	ap;
 
