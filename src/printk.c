@@ -202,14 +202,15 @@ vdprintk(const char *fmt, va_list ap)
 	}
 }
 
-void
+i32
 printk(const char *fmt, ...)
 {
 	va_list	ap;
 
 	if (!fmt)
-		return ;
+		return (0);
 	va_start(ap, fmt);
 	vdprintk(fmt, ap);
 	va_end(ap);
+	return (printk_ctx.len);
 }

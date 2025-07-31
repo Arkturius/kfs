@@ -16,6 +16,8 @@
 # define	VGA_INDEX_BYTE	0x3D4
 # define	VGA_DATA_BYTE	(VGA_INDEX_BYTE + 1)
 
+# define	VGA_INIT_ATTR	VGA_COLOR_LIGHT_BLUE | VGA_COLOR_BLACK << 4 
+
 typedef struct _VGA_ctx
 {
 	u8	col;
