@@ -6,11 +6,8 @@
 #include <printk.h>
 #include <vga.h>
 
-u8
-kb_key_get(void)
-{
-	return (0);
-}
+char
+kb_key_get(void);
 
 int kmain(void)
 {
