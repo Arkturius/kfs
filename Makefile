@@ -7,13 +7,14 @@ include sources.mk
 PREFIX		:=	i686-elf
 
 CC			:=	$(PREFIX)-gcc
-CFLAGS		:=	-ffreestanding -fno-builtin -fno-exceptions -fno-stack-protector -nostdlib -nodefaultlibs -Wall -Wextra -Werror -O2 -Iinclude
+CFLAGS		:=	-ffreestanding -fno-builtin -fno-exceptions -fno-stack-protector -nostdlib -nodefaultlibs -Wall -Wextra -Werror -Iinclude
 
 AS			:=	nasm
 ASFLAGS		:=	-f elf32
 
+LD			:=	$(PREFIX)-ld
 LDSCRIPT	:=	./kfs.ld
-LDFLAGS		:=	-T $(LDSCRIPT)
+LDFLAGS		:=	-T $(LDSCRIPT) -m elf_i386
 
 SRCS_DIR	:=	src
 
@@ -26,26 +27,26 @@ OBJS_S		:=	$(addprefix $(OBJS_DIR)/, $(SRCS_S:%.s=%.o))
 OBJS_C		:=	$(addprefix $(OBJS_DIR)/, $(SRCS_C:%.c=%.o))
 OBJS		:=	$(OBJS_C) $(OBJS_S)
 
-BINARY		:=	kfs.bin
+ELF			:=	kfs.elf
 ISO			:=	kfs.iso
 
 ifeq ($(BONUS), 1)
 	CFLAGS	+= -DKFS_BONUS
 endif
 
-all:	$(BINARY)
+all:	$(ELF)
 
-run:	$(BINARY)
-	cp kfs.bin iso/boot/
+run:	$(ELF)
+	cp $< iso/boot/
 	grub-mkrescue -o $(ISO) iso
 	qemu-system-i386 -cdrom $(ISO)
 
-$(BINARY):	$(OBJS)
-	$(CC) $(LDFLAGS) $(CFLAGS) $^ -o kfs.bin -lgcc
+$(ELF):	$(OBJS)
+	$(LD) $(LDFLAGS) $^ -o $@
 
 $(OBJS_DIR)/src/%.o:	src/%.c
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@ -lgcc
 
 $(OBJS_DIR)/src/%.o:	src/%.s
 	@mkdir -p $(@D)
@@ -53,6 +54,6 @@ $(OBJS_DIR)/src/%.o:	src/%.s
 
 fclean:
 	@rm -rf $(OBJS_DIR)
-	@rm -rf $(BINARY) $(ISO)
+	@rm -rf $(ELF) $(ISO)
 
 re:		fclean run

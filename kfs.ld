@@ -2,17 +2,18 @@ ENTRY(kstart)
 
 SECTIONS
 {
-	. = 2M;
-	.text BLOCK(4K): ALIGN(4K)
+	. = 0x100000;
+
+	.text ALIGN(4K):
 	{
 		*(.multiboot)
 		*(.text)
 	}
-	.data BLOCK(4K): ALIGN(4K)
+	.data ALIGN(4K):
 	{
 		*(.data)
 	}
-	.bss BLOCK(4K): ALIGN(4K)
+	.bss ALIGN(4K):
 	{
 		*(.bss)
 	}
