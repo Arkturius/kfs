@@ -5,12 +5,10 @@
 #include <kernel.h>
 #include <printk.h>
 #include <vga.h>
+#include <driver/keyboard.h>
 
 u8
-kb_key_get(void)
-{
-	return (0);
-}
+kb_key_get(void);
 
 int kmain(void)
 {
@@ -30,8 +28,20 @@ int kmain(void)
 
 	while (1)
 	{
-		for (i32 i = 0; i < 0x1fffffff; ++i);
-		vga_screen_shift();
+		u8	key = kb_key_get();
+
+		if (!key)
+			continue ;
+
+		if ((kbd_mod & MOD_ALT_L) && key == '\t')
+		{
+ 			vga_screen_shift();
+ 			vga_puts("screen change\n");
+			continue;
+		}
+	
+		vga_putc(key);
+
 	}
 
 	return (0);
