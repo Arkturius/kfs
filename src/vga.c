@@ -144,6 +144,18 @@ vga_cursor_set(u8 x, u8 y)
 	vga_cursor_update();
 }
 
+__inline void
+vga_screen_slide_left(void)
+{
+	u16 *line;
+	for(u32 i = 0; i < VGA_HEIGHT; i++)
+	{
+		line = ((u16 *)VGA_SCREEN) + (i * VGA_WIDTH);
+		memcpy(line, line + 1 , (VGA_WIDTH - 1) * 2);
+		line[VGA_WIDTH - 1] = VGA_CTX.attr << 8 | 0;
+	}
+}
+
 void
 vga_screen_shift(void)
 {
@@ -151,14 +163,29 @@ vga_screen_shift(void)
 	VGA_ctx		tmp;
 	VGA_ctx		*ctx = n ? &VGA0.ctx : &VGA1.ctx;
 	void		*screen = n ? VGA0_screen : VGA1_screen;
+	u32			line;
 
 	tmp = VGA_CTX;
 	VGA_CTX = *ctx;
 	*ctx = tmp;
 
+	
 	memcpy(VGA_tmp, (u16 *)VGA_SCREEN, VGA_WIDTH * VGA_HEIGHT * 2);
-	memcpy((u16 *)VGA_SCREEN, screen, VGA_WIDTH * VGA_HEIGHT * 2);
+
+	vga_screen_slide_left();
+	for(u32 i = 0; i < VGA_HEIGHT;i++)
+		((u16 *)VGA_SCREEN)[(i * VGA_WIDTH) + (VGA_WIDTH - 1)] = 0xFF << 8 | 0xDB;
+	for(u32 i = 0; i < VGA_WIDTH; i++)
+	{
+		vga_screen_slide_left();
+		for(u32 j = 0; j < VGA_HEIGHT;j++)
+		{
+			line = (j * VGA_WIDTH);
+			((u16 *)VGA_SCREEN)[line + (VGA_WIDTH - 1)] = ((u16 *)screen)[line + i];
+		}
+	}
 	memcpy(screen, VGA_tmp, VGA_HEIGHT * VGA_WIDTH * 2);
+	vga_cursor_update();
 
 	n = !n;
 }

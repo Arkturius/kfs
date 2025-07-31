@@ -35,8 +35,12 @@ kmain(void)
 {
     vga_init();
     kfs_logo();
+	vga_attr_set(VGA_COLOR_LIGHT_BLUE, VGA_COLOR_BLACK);
 
     vga_cursor_set(0, 0);
+
+	printk("%d\n", 42);
+
     while (1)
     {
         u8 key = kb_key_get();
