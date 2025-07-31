@@ -23,7 +23,7 @@ vga_cursor_update(void)
 	u16 pos = (VGA_CTX.row * VGA_WIDTH) + VGA_CTX.col;
 
 	outb(VGA_INDEX_BYTE, 0x0F);
-	outb(VGA_DATA_BYTE,  pos);
+	outb(VGA_DATA_BYTE,  pos & 0xFF);
 	outb(VGA_INDEX_BYTE, 0x0E);
 	outb(VGA_DATA_BYTE,  pos >> 8);
 }
@@ -45,7 +45,7 @@ vga_newline(void)
 		vga_scroll();
 	else
 		VGA_CTX.row++;
-	((u16 *)VGA_SCREEN)[VGA_CTX.row * VGA_WIDTH + VGA_CTX.col] = ' ';
+	((u16 *)VGA_SCREEN)[VGA_CTX.row * VGA_WIDTH + VGA_CTX.col] = (VGA_CTX.attr << 8) | ' ';
 	vga_cursor_update();
 }
 
@@ -94,16 +94,22 @@ vga_backspace(void)
 }
 
 void
+vga_screen_clear(u16 *vga)
+{
+	for (u32 i = 0; i < VGA_WIDTH * VGA_HEIGHT; ++i)
+		vga[i] = (VGA_CTX.attr << 8) | ' ';
+}
+
+void
 vga_init(void)
 {
-	memset((u16 *)VGA_SCREEN, 0, VGA_WIDTH * VGA_HEIGHT * 2);
-
-	memset(VGA0_screen, 0, VGA_WIDTH * VGA_HEIGHT * 2);
-	memset(VGA1_screen, 0, VGA_WIDTH * VGA_HEIGHT * 2);
-
 	VGA_CTX.attr = VGA_INIT_ATTR;
 	VGA0.ctx.attr = VGA_INIT_ATTR;
 	VGA1.ctx.attr = VGA_INIT_ATTR;
+	
+	vga_screen_clear((u16 *)VGA_SCREEN);
+	vga_screen_clear(VGA0.screen);
+	vga_screen_clear(VGA1.screen);
 }
 
 void
@@ -170,7 +176,7 @@ vga_putc(char c)
 		default:
 			break ;
 	}
-	((u16 *)VGA_SCREEN)[VGA_CTX.row * VGA_WIDTH + VGA_CTX.col] = VGA_CTX.attr << 8 | c;
+	((u16 *)VGA_SCREEN)[VGA_CTX.row * VGA_WIDTH + VGA_CTX.col] = (VGA_CTX.attr << 8) | c;
 	VGA_CTX.col++;
 	if (VGA_CTX.col == VGA_WIDTH)
 		vga_newline();

@@ -68,7 +68,7 @@ void
 vga_screen_shift(void);
 
 void
-vga_screen_clear(VGA_screen *vga);
+vga_screen_clear(u16 *vga);
 
 /* INTERFACE ******************************************************************/
 
