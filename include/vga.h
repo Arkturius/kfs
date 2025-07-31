@@ -1,3 +1,7 @@
+/**
+ * vga.h
+ */
+
 #ifndef _VGA_H
 # define _VGA_H
 
@@ -45,13 +49,7 @@ enum vga_color
 	VGA_COLOR_WHITE			= 15,
 };
 
-extern VGA_screen	VGA1;
-extern VGA_screen	VGA2;
-extern VGA_screen	VGA3;
-extern VGA_screen	*VGA;
-
-extern u16	VGA2_screen[VGA_WIDTH * VGA_HEIGHT];
-extern u16	VGA3_screen[VGA_WIDTH * VGA_HEIGHT];
+/* UTILS **********************************************************************/
 
 void
 vga_init(void);
@@ -61,6 +59,14 @@ vga_attr_set(u8 fg, u8 bg);
 
 void
 vga_cursor_set(u8 x, u8 y);
+
+void
+vga_screen_shift(void);
+
+void
+vga_screen_clear(VGA_screen *vga);
+
+/* INTERFACE ******************************************************************/
 
 void
 vga_putc(char c);

@@ -1,3 +1,7 @@
+/**
+ * stdbool.h
+ */
+
 #ifndef _STDBOOL_H
 # define _STDBOOL_H
 

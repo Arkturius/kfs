@@ -16,19 +16,22 @@ int kmain(void)
 {
 	vga_init();
 
-	printk("%d\n", 42);
+	vga_attr_set(VGA_COLOR_LIGHT_BLUE, VGA_COLOR_BLACK);
+	printk("%d\n", 0);
+	vga_screen_shift();
+
+	vga_attr_set(VGA_COLOR_LIGHT_RED, VGA_COLOR_BLACK);
+	printk("%d\n", 1);
+	vga_screen_shift();
+
+	vga_attr_set(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK);
+	printk("%d\n", 2);
+	vga_screen_shift();
 
 	while (1)
 	{
-		u8	key = kb_key_get();
-
-		if (!key)
-			continue ;
-
-// 		if (KB_KEY_ALT && key == KB_KEYCODE_TAB)
-// 			vga_screen_shift();
-
-		vga_putc(key);
+		for (i32 i = 0; i < 0x1fffffff; ++i);
+		vga_screen_shift();
 	}
 
 	return (0);
