@@ -10,6 +10,7 @@
 int kmain(void)
 {
 	vga_init();
+	printk("%d\n", 42);
 
 	while (1)
 	{

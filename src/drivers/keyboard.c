@@ -66,6 +66,7 @@ kb_key_get()
 		return(0);
 	}
 
+
 	released = scancode & 0x80;
 	if(extended)
 		key = extended_scan_codes[scancode & 0x7f];
@@ -75,6 +76,10 @@ kb_key_get()
 
 	if(kb_mod_update(key, released))
 		return(0);
+
+	if(key >= 'a' && key <= 'z' && kbd_mod & (MOD_SHIFT_R | MOD_SHIFT_L))
+		key -= 32;
+
 	if(key < 0x7f && !released)
 		return(key);
 	return(0);
