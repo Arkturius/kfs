@@ -29,7 +29,7 @@ kmain(void)
     log("screen cleared.");
 
     kfs_logo();
-	log("%d\n", 42);
+	printk("%d\n", 42);
 
     while (1)
     {
