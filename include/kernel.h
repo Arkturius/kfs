@@ -17,4 +17,21 @@ panic(const char *msg)
 	__asm ("hlt");
 }
 
+# if defined(__KFS_DEBUG__)
+#  define    log(X, ...)                                                    \
+    do                                                                      \
+    {                                                                       \
+        u8 _attrsave = VGA_CTX.attr;                                        \
+        vga_attr_set(VGA_COLOR_DARK_GREY, VGA_COLOR_BLACK);                 \
+        vga_puts("[LOG]");                                                  \
+        vga_attr_set(_attrsave & 0xF, _attrsave >> 4);                      \
+        printk(" - "X"\n", ##__VA_ARGS__);                                  \
+    } while (0);
+# else
+#  define   log(X, ...) 
+# endif
+
+void
+nop_loop(u32 n);
+
 #endif // _KERNEL_H

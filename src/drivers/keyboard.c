@@ -1,3 +1,4 @@
+#include "keycodes.h"
 #include <kernel.h>
 #include <sys/types.h>
 #include <sys/cdefs.h>
@@ -56,11 +57,11 @@ kb_key_get()
 	u8 released;
 	static u8 extended = 0;
 
-	if(!(inb(0x64) & 0b1))
+	if (!(inb(0x64) & 0b1))
 		return(0);
 
 	scancode = inb(0x60);
-	if(scancode == 0xE0)
+	if (scancode == 0xE0)
 	{
 		extended = 1;
 		return(0);
@@ -68,19 +69,25 @@ kb_key_get()
 
 
 	released = scancode & 0x80;
-	if(extended)
+	if (extended)
 		key = extended_scan_codes[scancode & 0x7f];
 	else
 		key = scan_codes[scancode & 0x7f];
 	extended = 0;
 
-	if(kb_mod_update(key, released))
+	if (kb_mod_update(key, released))
 		return(0);
 
-	if(key >= 'a' && key <= 'z' && kbd_mod & (MOD_SHIFT_R | MOD_SHIFT_L))
+	if (key >= 'a' && key <= 'z' && kbd_mod & (MOD_SHIFT_R | MOD_SHIFT_L))
 		key -= 32;
 
-	if(key < 0x7f && !released)
-		return(key);
-	return(0);
+    if (released)
+        return (0);
+    if (key >= 32 && key < 0x7f)
+		return (key);
+    if (key >= 8 && key <= 13)
+        return (key);
+    if (key == KEY_DOWN || key == KEY_UP || key == KEY_LEFT || key == KEY_RIGHT)
+        return (key);
+    return(0);
 }

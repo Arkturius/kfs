@@ -8,6 +8,7 @@
 # include <sys/io.h>
 # include <sys/cdefs.h>
 # include <sys/types.h>
+# include <stdbool.h>
 
 # define	VGA_SCREEN	0xB8000
 # define	VGA_WIDTH	80
@@ -18,11 +19,14 @@
 
 # define	VGA_CURSOR_ATTR	(VGA_COLOR_LIGHT_RED | VGA_COLOR_BLACK << 4)
 
+# define    VGA_STATUS_SIZE 1
+
 typedef struct _VGA_ctx
 {
 	u8	col;
 	u8	row;
 	u8	attr;
+    u8  n;
 }	VGA_ctx;
 
 typedef struct _VGA_screen
@@ -60,6 +64,12 @@ vga_init(void);
 
 void
 vga_attr_set(u8 fg, u8 bg);
+
+void
+vga_fg_set(u8 fg);
+
+void
+vga_bg_set(u8 bg);
 
 void
 vga_cursor_set(u8 x, u8 y);

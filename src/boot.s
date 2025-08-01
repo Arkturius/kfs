@@ -22,6 +22,15 @@ kstart:
 	hlt
 	jmp .hlt
 
+global nop_loop
+nop_loop:
+    mov     ecx, dword [esp + 8]
+.loop:
+    dec     ecx
+    test    ecx, ecx
+    jne     .loop
+    ret
+
 section .bss
 STACK_BTM:	resb 4096
 STACK_TOP:

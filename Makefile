@@ -34,6 +34,13 @@ ifeq ($(BONUS), 1)
 	CFLAGS	+= -DKFS_BONUS
 endif
 
+DEBUG		?=	0
+
+ifeq ($(DEBUG), 1)
+	CFLAGS	+= -D__KFS_DEBUG__
+endif
+
+
 all:	$(ELF)
 
 run:	$(ELF)
