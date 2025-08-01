@@ -34,7 +34,7 @@ ifeq ($(BONUS), 1)
 	CFLAGS	+= -DKFS_BONUS
 endif
 
-DEBUG		?=	0
+DEBUG		?=	1
 
 ifeq ($(DEBUG), 1)
 	CFLAGS	+= -D__KFS_DEBUG__
@@ -46,7 +46,7 @@ all:	$(ELF)
 run:	$(ELF)
 	cp $< iso/boot/
 	grub-mkrescue -o $(ISO) iso
-	qemu-system-i386 -cdrom $(ISO)
+	qemu-system-i386 -cdrom $(ISO) -no-reboot -no-shutdown
 
 $(ELF):	$(OBJS)
 	$(LD) $(LDFLAGS) $^ -o $@

@@ -29,7 +29,15 @@ kmain(void)
     log("screen cleared.");
 
     kfs_logo();
-	log("%d\n", 42);
+	log("%d", 42);
+
+    for (u32 i = 0; i < 7; ++i)
+    {
+        u32 addr = 0x800 + 8 * i;
+        printk("[%d] ", i);
+        printk("0x%08x", *((u32 *)addr + 1));
+        printk("%08x\n", *((u32 *)addr));
+    }
 
     while (1)
     {

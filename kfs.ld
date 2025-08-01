@@ -2,6 +2,13 @@ ENTRY(kstart)
 
 SECTIONS
 {
+    . = 0x800;
+    
+    .gdt :
+    {
+        *(.gdt)
+    }
+
 	. = 0x100000;
 
 	.text ALIGN(4K):

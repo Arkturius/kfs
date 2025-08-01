@@ -196,18 +196,6 @@ vga_cursor_set(u8 x, u8 y)
 }
 
 void
-vga_screen_slide_left(void)
-{
-	u16 *line;
-	for(u32 i = 0; i < VGA_HEIGHT; i++)
-	{
-		line = ((u16 *)VGA_SCREEN) + (i * VGA_WIDTH);
-		memcpy(line, line + 1 , (VGA_WIDTH - 1) * 2);
-		line[VGA_WIDTH - 1] = VGA_CTX.attr << 8 | 0;
-	}
-}
-
-void
 vga_screen_shift(void)
 {
 	static bool	n = true;
@@ -225,24 +213,6 @@ vga_screen_shift(void)
 
 	
 	memcpy(VGA_tmp, (u16 *)VGA_SCREEN, VGA_WIDTH * VGA_HEIGHT * 2);
-
-#if 0
-	u32			line;
-
-	vga_screen_slide_left();
-	for(u32 i = 0; i < VGA_HEIGHT;i++)
-		((u16 *)VGA_SCREEN)[(i * VGA_WIDTH) + (VGA_WIDTH - 1)] = 0xFF << 8 | 0xDB;
-	for(u32 i = 0; i < VGA_WIDTH; i++)
-	{
-        nop_loop(0xffffff);
-		vga_screen_slide_left();
-		for(u32 j = 0; j < VGA_HEIGHT;j++)
-		{
-			line = (j * VGA_WIDTH);
-			((u16 *)VGA_SCREEN)[line + (VGA_WIDTH - 1)] = ((u16 *)screen)[line + i];
-		}
-	}
-#else
 	for(u32 i = 0; i < VGA_HEIGHT;i++)
 		((u16 *)VGA_SCREEN)[(i * VGA_WIDTH) + (VGA_WIDTH - 1)] = 0x04 << 8 | 0xDB;
 	for (u32 colon = 0; colon < VGA_WIDTH; ++colon)
@@ -256,12 +226,7 @@ vga_screen_shift(void)
          nop_loop(0xffffffff);
          nop_loop(0xffffffff);
          nop_loop(0xffffffff);
-         nop_loop(0xffffffff);
-         nop_loop(0xffffffff);
 	}
-
-
-#endif
 	memcpy(screen, VGA_tmp, VGA_HEIGHT * VGA_WIDTH * 2);
 	vga_update();
 
