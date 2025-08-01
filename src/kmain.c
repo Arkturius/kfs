@@ -35,8 +35,7 @@ kmain(void)
     {
         u32 addr = 0x800 + 8 * i;
         printk("[%d] ", i);
-        printk("0x%08x", *((u32 *)addr + 1));
-        printk("%08x\n", *((u32 *)addr));
+        printk("0x%08x%08x\n", *((u32 *)addr + 1),*((u32 *)addr));
     }
 
     while (1)

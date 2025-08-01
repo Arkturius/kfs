@@ -14,6 +14,7 @@
 typedef struct	printk_ctx
 {
 	u32			len;
+	u32			total;
 	char		out[PRINTK_BUFSIZE];
 }	printf_ctx;
 
@@ -23,6 +24,7 @@ void
 printk_fflush(void)
 {
 	vga_write(printk_ctx.out, printk_ctx.len);
+	printk_ctx.total += printk_ctx.len;
 	printk_ctx.len = 0;
 }
 
@@ -102,7 +104,7 @@ printk_switch_prefix(const char **fmt_ptr, u32 *pad_ptr)
 }
 
 __inline void
-printk_switch_flags(const char **fmt_ptr, va_list ap)
+printk_switch_flags(const char **fmt_ptr, va_list *ap)
 {
 	const char	*fmt = *fmt_ptr;
 	const char	*to_add;
@@ -118,34 +120,34 @@ printk_switch_flags(const char **fmt_ptr, va_list ap)
 	switch (*fmt)
 	{
 		case 'c':
-			c = va_arg(ap, int);
+			c = va_arg(*ap, int);
 			to_add = &c;
 			len = 1;
 			goto end;
 		case 's':
-			to_add = va_arg(ap, char *);
+			to_add = va_arg(*ap, char *);
 			break ;
 		case 'i': 
 		case 'd':
 			if (flags & U_LONG)
-				to_add = lltoa(va_arg(ap, int));
+				to_add = lltoa(va_arg(*ap, int));
 			else
-				to_add = lltoa(va_arg(ap, long));
+				to_add = lltoa(va_arg(*ap, long));
 			break ;
 		case 'u':
 			if (flags & U_LONG)
-				to_add = ulltoa(va_arg(ap, unsigned int));
+				to_add = ulltoa(va_arg(*ap, unsigned int));
 			else
-				to_add = ulltoa(va_arg(ap, unsigned long));
+				to_add = ulltoa(va_arg(*ap, unsigned long));
 			break ;
 		case 'x':
-			to_add = ulxtoa(va_arg(ap, unsigned int), 0);
+			to_add = ulxtoa(va_arg(*ap, unsigned int), 0);
 			break ;
 		case 'X':
-			to_add = ulxtoa(va_arg(ap, unsigned int), 1);
+			to_add = ulxtoa(va_arg(*ap, unsigned int), 1);
 			break ;
 		case 'p':
-			to_add = ptrtoa(va_arg(ap, unsigned long));
+			to_add = ptrtoa(va_arg(*ap, unsigned long));
 			break ;
 		default:
 			panic("Invalid printk format.");
@@ -188,7 +190,7 @@ vdprintk(const char *fmt, va_list ap)
 		switch (*fmt)
 		{
 			case '%':
-				printk_switch_flags(&fmt, ap);
+				printk_switch_flags(&fmt, &ap);
 				break ;
 			case '\n':
 				printk_ctx_cat(fmt, 1);
@@ -212,5 +214,5 @@ printk(const char *fmt, ...)
 	va_start(ap, fmt);
 	vdprintk(fmt, ap);
 	va_end(ap);
-	return (printk_ctx.len);
+	return (printk_ctx.total);
 }
