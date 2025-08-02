@@ -63,7 +63,9 @@ vga_scroll(void)
 	u32	offset = VGA_WIDTH * (VGA_HEIGHT - 1 - VGA_STATUS_SIZE);
 
 	memcpy((u16 *)VGA_SCREEN, (u16 *)VGA_SCREEN + VGA_WIDTH, offset * 2);
-	memset((u16 *)VGA_SCREEN + offset, 0, VGA_WIDTH * 2);
+
+	for (u32 i = 0; i < VGA_WIDTH; ++i)
+		((u16 *)VGA_SCREEN + offset)[i] = (VGA_CURSOR_ATTR << 8);
 }
 
 __inline void
