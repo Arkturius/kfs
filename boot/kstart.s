@@ -12,6 +12,7 @@ grub_checksum:	dd -(MAGIC + FLAGS)
 section .text
 
 extern kmain
+extern GDT_descriptor
 
 global kstart
 kstart:
@@ -25,7 +26,7 @@ kstart:
 	jmp .hlt
 
 gdt_set:
-    lgdt    [GDT_DESCRIPTOR]
+    lgdt    [GDT_descriptor]
     ret
 
 gdt_segment_reload:
@@ -52,22 +53,3 @@ nop_loop:
 section .bss
 STACK_BTM:	resb 4096
 STACK_TOP:
-
-section .gdt
-global GDT_START
-global GDT_END
-GDT_START:
-GDT_TABLE:
-    dq  0x0000000000000000 ; NULL descriptor
-    dq  0x00CF9A000000FFFF
-    dq  0x00CF92000000FFFF
-    dq  0x00C096000000FFFF
-    dq  0x00CFFA000000FFFF
-    dq  0x00CFF2000000FFFF
-    dq  0x00C0F6000000FFFF
-GDT_END:
-
-section .data
-GDT_DESCRIPTOR:
-    dw  GDT_END - GDT_START - 1
-    dd  GDT_START

@@ -1,9 +1,13 @@
-#include "keycodes.h"
+/**
+ * drivers/keyboard.c
+ */
+
+#include <keycodes.h>
 #include <kernel.h>
 #include <sys/types.h>
 #include <sys/cdefs.h>
 #include <sys/io.h>
-#include <driver/keyboard.h>
+#include <drivers/keyboard.h>
 #include <printk.h>
 
 u8 kbd_mod = 0;

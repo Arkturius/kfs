@@ -148,9 +148,9 @@ vga_screen_clear(u16 *vga)
 void
 vga_init(void)
 {
-	VGA_CTX.attr = VGA_CURSOR_ATTR;
-	VGA0.ctx.attr = VGA_CURSOR_ATTR;
-	VGA1.ctx.attr = VGA_CURSOR_ATTR;
+	VGA_CTX.attr = VGA_COLOR_WHITE | VGA_COLOR_BLACK << 4;
+	VGA0.ctx.attr = VGA_COLOR_WHITE | VGA_COLOR_BLACK << 4;
+	VGA1.ctx.attr = VGA_COLOR_WHITE | VGA_COLOR_BLACK << 4;
 	
 	vga_screen_clear((u16 *)VGA_SCREEN);
 	vga_screen_clear(VGA0.screen);
