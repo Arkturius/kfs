@@ -121,6 +121,12 @@ kdump_stack(void)
 }
 
 int
+is_hex(char c)
+{
+	return((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'));
+}
+
+int
 kshell_exec(const char *cmd)
 {
     if (!strncmp(cmd, "stack", 6))
@@ -143,6 +149,13 @@ kshell_exec(const char *cmd)
         VGA_CTX.row = 0;
         vga_screen_clear((u16 *)VGA_SCREEN);
     }
+    if (!strncmp(cmd, "color ", 6))
+	{
+		char hex[16] = "0123456789abcdef";
+		if(is_hex(cmd[6]) && is_hex(cmd[7]))
+			VGA_CTX.attr = (strchr(hex, cmd[6]) - hex) << 4 | (strchr(hex, cmd[7]) - hex);
+
+	}
     return (0);
 }
 
@@ -152,10 +165,11 @@ kshell(void)
     while (1)
     {
         memset(VGA_BUF, 0, sizeof(VGA_BUF));
+		u8 attr_save = VGA_CTX.attr;
         vga_attr_set(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printk("kfs $ ");
         printk_fflush();
-        vga_attr_set(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+		VGA_CTX.attr = attr_save;
 
         i32 r = kb_read(VGA_BUF, sizeof(VGA_BUF));
 
@@ -186,6 +200,5 @@ kmain(void)
     kdump_gdt();
     log("launching shell...");
     kshell();
-
-    return (0);
+return (0);
 }

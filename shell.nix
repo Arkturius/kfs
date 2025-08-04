@@ -13,4 +13,7 @@ pkgs.mkShell {
 		mtools
 		libisoburn
     ];
+  shellHook = ''
+	make fclean all
+  '';
 }

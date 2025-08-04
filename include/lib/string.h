@@ -28,6 +28,9 @@ strncmp(const char *s1, const char *s2, u32 n);
 u32
 strlen(const char *str);
 
+char *
+strchr(const char *s, int c);
+
 
 const char
 *lltoa(i32 i);

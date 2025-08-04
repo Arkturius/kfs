@@ -23,6 +23,24 @@ void
 }
 
 /* STRING *********************************************************************/
+char *
+strchr(const char *s, int c)
+{
+	int		i;
+	char	*res;
+
+	i = 0;
+	res = (char *)s;
+	while (res[i])
+	{
+		if (res[i] == (unsigned char)c)
+			return (res + i);
+		i++;
+	}
+	if (res[i] == (unsigned char)c)
+		return (res + i);
+	return (NULL);
+}
 
 u32
 strlen(const char *str)
