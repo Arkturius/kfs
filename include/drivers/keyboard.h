@@ -43,4 +43,7 @@ extern u8 kbd_mod;
 u8
 kb_key_get();
 
+i32
+kb_read(char *buffer, u32 size);
+
 #endif // _DRIVER_KEYBOARD_H

@@ -148,9 +148,9 @@ vga_screen_clear(u16 *vga)
 void
 vga_init(void)
 {
-	VGA_CTX.attr = VGA_COLOR_WHITE | VGA_COLOR_BLACK << 4;
-	VGA0.ctx.attr = VGA_COLOR_WHITE | VGA_COLOR_BLACK << 4;
-	VGA1.ctx.attr = VGA_COLOR_WHITE | VGA_COLOR_BLACK << 4;
+	VGA_CTX.attr = VGA_COLOR_LIGHT_GREY | VGA_COLOR_BLACK << 4;
+	VGA0.ctx.attr = VGA_COLOR_LIGHT_GREY | VGA_COLOR_BLACK << 4;
+	VGA1.ctx.attr = VGA_COLOR_LIGHT_GREY | VGA_COLOR_BLACK << 4;
 	
 	vga_screen_clear((u16 *)VGA_SCREEN);
 	vga_screen_clear(VGA0.screen);
@@ -253,7 +253,7 @@ vga_putc(char c)
         case KEY_UP:
         case KEY_LEFT:
         case KEY_RIGHT:
-            vga_arrow(c);
+            //vga_arrow(c);
             return ;
 		default:
 			break ;

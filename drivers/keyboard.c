@@ -95,3 +95,29 @@ kb_key_get()
         return (key);
     return(0);
 }
+
+i32
+kb_read(char *buffer, u32 size)
+{
+    i32 n = 0;
+
+    while (1)
+    {
+        u8  c = kb_key_get();
+
+        if (!c)
+            continue ;
+        if (c == '\n')
+            break ;
+        if (c == 8 && n != 0)
+            buffer[--n] = 0;
+        else if (c >= 32 && c < 127)
+            buffer[n++] = c;
+        else
+            continue ;
+        vga_putc(c);
+        if (!size--)
+            break ;
+    }
+    return (n);
+}

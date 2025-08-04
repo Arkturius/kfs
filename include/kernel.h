@@ -23,9 +23,9 @@ panic(const char *msg)
     {                                                                       \
         u8 _attrsave = VGA_CTX.attr;                                        \
         vga_attr_set(VGA_COLOR_DARK_GREY, VGA_COLOR_BLACK);                 \
-        vga_puts("[LOG]");                                                  \
+        vga_puts("kfs $ ");                                                 \
         vga_attr_set(_attrsave & 0xF, _attrsave >> 4);                      \
-        printk(" - "X"\n", ##__VA_ARGS__);                                  \
+        printk(X"\n", ##__VA_ARGS__);                                       \
     } while (0);
 # else
 #  define   log(X, ...) 
