@@ -32,6 +32,9 @@ panic(const char *msg)
 # endif
 
 void
+kreboot(void);
+
+void
 nop_loop(u32 n);
 
 #endif // _KERNEL_H

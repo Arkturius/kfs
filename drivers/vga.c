@@ -2,8 +2,9 @@
  * vga.c
  */
 
-#include "keycodes.h"
-#include "stdbool.h"
+#include <keycodes.h>
+#include <printk.h>
+#include <stdbool.h>
 #include <kernel.h>
 #include <sys/types.h>
 #include <sys/io.h>
@@ -17,6 +18,10 @@ u16	VGA1_screen[VGA_WIDTH * VGA_HEIGHT] = {0};
 VGA_ctx		VGA_CTX = {0};
 VGA_screen	VGA0 = { .screen = (u16 *)VGA0_screen };
 VGA_screen	VGA1 = { .screen = (u16 *)VGA1_screen };
+
+char    VGA_BUF[256] = {0};
+char    VGA0_buf[256] = {0};
+char    VGA1_buf[256] = {0};
 
 __inline void
 vga_cursor_update(void)
@@ -41,13 +46,23 @@ vga_status_update(u16 *vga)
     vga[offset + i++] = (VGA_CTX.n + 48) | attr << 8;
     for (; i < VGA_WIDTH - 7; ++i)
         vga[offset + i] = ' ' | attr << 8;
-    vga[offset + i++] = (VGA_CTX.row / 10 + 48) | attr << 8;
-    vga[offset + i++] = (VGA_CTX.row % 10 + 48) | attr << 8;
-    vga[offset + i++] = ',' | attr << 8;
-    vga[offset + i++] = ' ' | attr << 8;
-    vga[offset + i++] = (VGA_CTX.col / 10 + 48) | attr << 8;
-    vga[offset + i++] = (VGA_CTX.col % 10 + 48) | attr << 8;
-    vga[offset + i++] = ' ' | attr << 8;
+
+     VGA_ctx save = VGA_CTX;
+ 
+     const char  *nb = ulltoa(save.row);
+ 
+     for (u32 j = 0; nb[j]; ++j)
+         vga[offset + i++] = nb[j] | attr << 8;
+     vga[offset + i++] = ',' | attr << 8;
+     vga[offset + i++] = ' ' | attr << 8;
+    
+    nb = ulltoa(save.col);
+
+    for (u32 j = 0; nb[j]; ++j)
+        vga[offset + i++] = nb[j] | attr << 8;
+
+    while (i < VGA_WIDTH)
+        vga[offset + i++] = ' ' | attr << 8;
 }
 
 static void
@@ -213,6 +228,12 @@ vga_screen_shift(void)
     VGA_CTX.n = ns;
     ns = (ns + 1) % 3;
 
+    char    btmp[256] = {0};
+    char    *b = n ? VGA0_buf : VGA1_buf;
+
+    memcpy(btmp, VGA_BUF, sizeof(btmp));
+    memcpy(VGA_BUF, b, sizeof(btmp));
+    memcpy(b, btmp, sizeof(btmp));
 	
 	memcpy(VGA_tmp, (u16 *)VGA_SCREEN, VGA_WIDTH * VGA_HEIGHT * 2);
 	for(u32 i = 0; i < VGA_HEIGHT;i++)

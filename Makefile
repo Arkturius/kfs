@@ -54,7 +54,7 @@ all:	$(ELF)
 run:	$(ELF)
 	cp $< iso/boot/
 	grub-mkrescue -o $(ISO) iso
-	qemu-system-i386 -cdrom $(ISO) -no-reboot -no-shutdown
+	qemu-system-i386 -cdrom $(ISO)
 
 $(ELF):	$(OBJS)
 	$(LD) $(LDFLAGS) $^ -o $@

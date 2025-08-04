@@ -41,6 +41,11 @@ gdt_segment_reload:
     mov     ss, ax
     ret
 
+global kreboot
+kreboot:
+    jmp     0xFFFF:0
+    hlt
+
 global nop_loop
 nop_loop:
     mov     ecx, dword [esp + 8]

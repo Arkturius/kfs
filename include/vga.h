@@ -35,7 +35,8 @@ typedef struct _VGA_screen
 	u16		*screen;
 }	VGA_screen;
 
-extern	VGA_ctx	VGA_CTX;
+extern	VGA_ctx VGA_CTX;
+extern  char    VGA_BUF[256];
 
 enum VGA_color
 {

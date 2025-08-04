@@ -2,6 +2,7 @@
  * drivers/keyboard.c
  */
 
+#include <vga.h>
 #include <keycodes.h>
 #include <kernel.h>
 #include <sys/types.h>
@@ -9,6 +10,7 @@
 #include <sys/io.h>
 #include <drivers/keyboard.h>
 #include <printk.h>
+#include <string.h>
 
 u8 kbd_mod = 0;
 
@@ -109,6 +111,11 @@ kb_read(char *buffer, u32 size)
             continue ;
         if (c == '\n')
             break ;
+        if (c == '\t' && kbd_mod & MOD_ALT_L)
+        {
+            vga_screen_shift();
+            return (0);
+        }
         if (c == 8 && n != 0)
             buffer[--n] = 0;
         else if (c >= 32 && c < 127)

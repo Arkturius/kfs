@@ -44,7 +44,7 @@ kdump_stack(void)
         u32 *ad4 = ad1 + 3;
 
         vga_fg_set(VGA_COLOR_DARK_GREY);
-        printk("%08x ", sptr);
+        printk("%08x| ", sptr);
         printk_fflush();
         
         vga_fg_set(VGA_COLOR_LIGHT_GREY);
@@ -120,8 +120,6 @@ kdump_stack(void)
     }
 }
 
-char    kshell_buf[256] = {0};
-
 int
 kshell_exec(const char *cmd)
 {
@@ -138,7 +136,13 @@ kshell_exec(const char *cmd)
     if (!strncmp(cmd, "halt", 5))
         __asm ("hlt");
     if (!strncmp(cmd, "reboot", 7))
-        __asm ("jmp kstart");
+        kreboot();
+    if (!strncmp(cmd, "clear", 6))
+    {
+        VGA_CTX.col = 0;
+        VGA_CTX.row = 0;
+        vga_screen_clear((u16 *)VGA_SCREEN);
+    }
     return (0);
 }
 
@@ -147,13 +151,13 @@ kshell(void)
 {
     while (1)
     {
-        memset(kshell_buf, 0, sizeof(kshell_buf));
+        memset(VGA_BUF, 0, sizeof(VGA_BUF));
         vga_attr_set(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printk("kfs $ ");
         printk_fflush();
         vga_attr_set(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
-        i32 r = kb_read(kshell_buf, sizeof(kshell_buf));
+        i32 r = kb_read(VGA_BUF, sizeof(VGA_BUF));
 
         if (r == 0)
         {
@@ -164,7 +168,7 @@ kshell(void)
             panic("kb_read");
 
         vga_putc('\n');
-        if (kshell_exec(kshell_buf))
+        if (kshell_exec(VGA_BUF))
             panic("kshell_exec");
     }
 }
@@ -178,11 +182,10 @@ kmain(void)
     log("screen cleared.");
 	log("%d", 42);
 
-//     log("Global Descriptor Table:");
-//     kdump_gdt();
-
+    log("Global Descriptor Table:");
+    kdump_gdt();
+    log("launching shell...");
     kshell();
-//    kdump_stack();
 
     return (0);
 }
