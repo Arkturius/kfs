@@ -54,7 +54,3 @@ nop_loop:
     test    ecx, ecx
     jne     .loop
     ret
-
-section .bss
-STACK_BTM:	resb 4096
-STACK_TOP:

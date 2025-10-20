@@ -12,6 +12,6 @@
 # define	__asm		    __asm__ volatile
 
 # define    __packed        __attribute__((packed))
-# define    __section(X)   __attribute__((section(X)))
+# define    __section(X)	__attribute__((section(X)))
 
 #endif // _SYS_CDEFS_H

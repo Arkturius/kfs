@@ -55,7 +55,6 @@ typedef struct  _gdt_desc
     GDT_entry   *table;
 }   __packed GDT_desc;
 
-# define    GDT                         __section(".gdt")
 # define    GDT_ENTRY(_b, _l, _a, _f)   (GDT_entry)                         \
     {                                                                       \
         .access = _a,                                                       \
